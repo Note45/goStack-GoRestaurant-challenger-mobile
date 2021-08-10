@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView } from 'react-native';
+import { Alert, Image, ScrollView } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -59,7 +59,14 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     async function loadFoods(): Promise<void> {
-      // Load Foods from API
+      api
+        .get('/foods')
+        .then(response => {
+          setFoods(response.data);
+        })
+        .catch(() => {
+          Alert.alert('Erro ao listar as comidas cadastradas!');
+        });
     }
 
     loadFoods();
@@ -67,7 +74,14 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     async function loadCategories(): Promise<void> {
-      // Load categories from API
+      api
+        .get('/categories')
+        .then(response => {
+          setCategories(response.data);
+        })
+        .catch(() => {
+          Alert.alert('Erro ao listar as categorias cadastradas!');
+        });
     }
 
     loadCategories();
