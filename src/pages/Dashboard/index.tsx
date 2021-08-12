@@ -54,41 +54,43 @@ const Dashboard: React.FC = () => {
   const navigation = useNavigation();
 
   async function handleNavigate(id: number): Promise<void> {
-    // Navigate do ProductDetails page
+    navigation.navigate('FoodDetails', { id });
   }
 
   useEffect(() => {
-    async function loadFoods(): Promise<void> {
-      api
-        .get('/foods')
-        .then(response => {
-          setFoods(response.data);
-        })
-        .catch(() => {
-          Alert.alert('Erro ao listar as comidas cadastradas!');
-        });
-    }
+    api
+      .get('/foods', {
+        params: {
+          category_like: selectedCategory,
+          name_like: searchValue,
+        },
+      })
+      .then(response => {
+        const formattedFood = response.data.map((food: any) => ({
+          ...food,
+          formattedPrice: formatValue(food.price),
+        }));
 
-    loadFoods();
+        setFoods(formattedFood);
+      })
+      .catch(() => {
+        Alert.alert('Erro ao listar as comidas cadastradas!');
+      });
   }, [selectedCategory, searchValue]);
 
   useEffect(() => {
-    async function loadCategories(): Promise<void> {
-      api
-        .get('/categories')
-        .then(response => {
-          setCategories(response.data);
-        })
-        .catch(() => {
-          Alert.alert('Erro ao listar as categorias cadastradas!');
-        });
-    }
-
-    loadCategories();
+    api
+      .get('/categories')
+      .then(response => {
+        setCategories(response.data);
+      })
+      .catch(() => {
+        Alert.alert('Erro ao listar as categorias cadastradas!');
+      });
   }, []);
 
   function handleSelectCategory(id: number): void {
-    // Select / deselect category
+    setSelectedCategory(selectedCategory === id ? undefined : id);
   }
 
   return (
