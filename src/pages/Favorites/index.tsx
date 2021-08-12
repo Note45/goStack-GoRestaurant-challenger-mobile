@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image } from 'react-native';
+import { Alert, Image } from 'react-native';
 
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
@@ -31,11 +31,19 @@ const Favorites: React.FC = () => {
   const [favorites, setFavorites] = useState<Food[]>([]);
 
   useEffect(() => {
-    async function loadFavorites(): Promise<void> {
-      // Load favorite foods from api
-    }
+    api
+      .get('/favorites')
+      .then(response => {
+        const formattedFavorite = response.data.map((favorite: any) => ({
+          ...favorite,
+          formattedPrice: formatValue(favorite.price),
+        }));
 
-    loadFavorites();
+        setFavorites(formattedFavorite);
+      })
+      .catch(() => {
+        Alert.alert('Erro ao listar os favoritos cadastradas!');
+      });
   }, []);
 
   return (

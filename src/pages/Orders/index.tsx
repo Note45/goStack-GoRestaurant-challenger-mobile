@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image } from 'react-native';
+import { Alert, Image } from 'react-native';
 
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
@@ -31,11 +31,19 @@ const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Food[]>([]);
 
   useEffect(() => {
-    async function loadOrders(): Promise<void> {
-      // Load orders from API
-    }
+    api
+      .get('/orders')
+      .then(response => {
+        const formattedOrder = response.data.map((order: any) => ({
+          ...order,
+          formattedPrice: formatValue(order.price),
+        }));
 
-    loadOrders();
+        setOrders(formattedOrder);
+      })
+      .catch(() => {
+        Alert.alert('Erro ao listar os pedidos cadastradas!');
+      });
   }, []);
 
   return (
